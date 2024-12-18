@@ -37,6 +37,21 @@
         h2 {
             color: #007bff;
         }
+        .button-group {
+            margin-bottom: 20px;
+        }
+        .button-group button {
+            margin: 0 10px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .button-group button:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
@@ -55,9 +70,14 @@
         </select>
         
         <iframe id="nameFilteredIframe" src="" width="100%" height="600"></iframe>
-        
+
         <h2>View Specific Asks filtered by Status</h2>
-        <iframe src="https://docs.google.com/spreadsheets/d/1Tya7ELlmpjzysHcOHUSr-Cl-BM6dXROq4nlM3zBYrC4/edit?resourcekey=&gid=1724033991&fvid=249001933"></iframe>
+        <div class="button-group">
+            <button id="openBtn">Open</button>
+            <button id="closedBtn">Closed</button>
+        </div>
+        
+        <iframe id="statusFilteredIframe" src="" width="100%" height="600"></iframe>
     </div>
 
     <script>
@@ -89,7 +109,27 @@
                 url += `&tq=${encodeURIComponent(nameQuery)}`;
             }
 
+            // Log the URL to the console for debugging
+            console.log("Generated URL:", url);
+
+            // Set the iframe src to the generated URL
             document.getElementById("nameFilteredIframe").src = url;
+        });
+
+        // Status buttons functionality
+        const openBtn = document.getElementById("openBtn");
+        const closedBtn = document.getElementById("closedBtn");
+
+        openBtn.addEventListener('click', function() {
+            const url = "https://docs.google.com/spreadsheets/u/4/d/1Tya7ELlmpjzysHcOHUSr-Cl-BM6dXROq4nlM3zBYrC4/gviz/tq?tqx=out:html&tq=SELECT+A,B,C,D,E+WHERE+E%3D%27Open%27";
+            console.log("Open status URL:", url);
+            document.getElementById("statusFilteredIframe").src = url;
+        });
+
+        closedBtn.addEventListener('click', function() {
+            const url = "https://docs.google.com/spreadsheets/u/4/d/1Tya7ELlmpjzysHcOHUSr-Cl-BM6dXROq4nlM3zBYrC4/gviz/tq?tqx=out:html&tq=SELECT+A,B,C,D,E+WHERE+E%3D%27Closed%27";
+            console.log("Closed status URL:", url);
+            document.getElementById("statusFilteredIframe").src = url;
         });
     </script>
 </body>
