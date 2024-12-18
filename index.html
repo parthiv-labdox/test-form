@@ -82,7 +82,7 @@
         const nameDropdown = document.getElementById("nameFilter");
         nameDropdown.addEventListener('change', function() {
             const selectedName = this.value;
-            let url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQLmL9sI-uKCz1LzY3zQIJRTZVC40MtV54-vhFPhAbdOr0N2VjtkEk8cCApxNxDlh5da_NG8Q8duaz5/gviz/tq?tqx=out:html";
+            let url = "https://docs.google.com/spreadsheets/d/1Tya7ELlmpjzysHcOHUSr-Cl-BM6dXROq4nlM3zBYrC4/gviz/tq?tqx=out:html";
             
             if (selectedName !== "All") {
                 const nameQuery = `SELECT A, B, C, D, E WHERE B='${selectedName}'`;
