@@ -37,11 +37,6 @@
         h2 {
             color: #007bff;
         }
-        select, button {
-            padding: 10px;
-            margin: 10px;
-            font-size: 16px;
-        }
     </style>
 </head>
 <body>
@@ -53,51 +48,43 @@
         <h2>Submit Your Ask</h2>
         <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vQLmL9sI-uKCz1LzY3zQIJRTZVC40MtV54-vhFPhAbdOr0N2VjtkEk8cCApxNxDlh5da_NG8Q8duaz5/pubhtml?widget=true&amp;headers=false"></iframe>
 
-        <h2>View Specific Asks filtered by Name</h2>
-        
-        <!-- Dropdown for selecting name -->
-        <select id="nameSelect">
-            <option value="">Select a Name</option>
-            <!-- Names will be populated here -->
+        <h2>View Specific Asks filtered by name</h2>
+        <select id="nameFilter">
+            <option value="All">All</option>
+            <!-- Add names dynamically from the names.txt file -->
         </select>
-        <button onclick="applyNameFilter()">Apply Filter</button>
-
-        <!-- Dynamic iframe for name-filtered data -->
+        
         <iframe id="nameFilteredIframe" src="" width="100%" height="600"></iframe>
-
+        
         <h2>View Specific Asks filtered by Status</h2>
-        <iframe src="https://docs.google.com/spreadsheets/d/1Tya7ELlmpjzysHcOHUSr-Cl-BM6dXROq4nlM3zBYrC4/edit?resourcekey=&gid=1724033991#gid=1724033991&fvid=249001933"></iframe>
+        <iframe src="https://docs.google.com/spreadsheets/d/1Tya7ELlmpjzysHcOHUSr-Cl-BM6dXROq4nlM3zBYrC4/edit?resourcekey=&gid=1724033991&fvid=249001933"></iframe>
     </div>
 
     <script>
-        // Fetch the names from the names.txt file
-        fetch('https://raw.githubusercontent.com/your-repo/your-repo-name/main/names.txt')
-            .then(response => response.text())
-            .then(text => {
-                const names = text.split('\n').map(name => name.trim()).filter(name => name !== "");
-                const nameSelect = document.getElementById('nameSelect');
-                names.forEach(name => {
-                    const option = document.createElement('option');
-                    option.value = name;
-                    option.textContent = name;
-                    nameSelect.appendChild(option);
-                });
-            })
-            .catch(error => console.error('Error fetching names:', error));
+        // Assume `names` is a list fetched from the names.txt file
+        const names = ['TEST', 'Test 2', 'TASK 3', 'TASK 4', 'TASK 5', 'TEST 10', 'task 11', 'TEST !@', 'CHECKING OPEN', 'another ceh'];
 
-        // Function to update the iframe based on selected name
-        function applyNameFilter() {
-            const name = document.getElementById('nameSelect').value;
-            const iframe = document.getElementById('nameFilteredIframe');
+        // Populate the dropdown with names from the list
+        const nameDropdown = document.getElementById("nameFilter");
+        names.forEach((name) => {
+            const option = document.createElement("option");
+            option.value = name;
+            option.text = name;
+            nameDropdown.appendChild(option);
+        });
 
-            if (name) {
-                // Update the iframe src with the filtered URL for the selected name
-                iframe.src = `https://docs.google.com/spreadsheets/d/1Tya7ELlmpjzysHcOHUSr-Cl-BM6dXROq4nlM3zBYrC4/gviz/tq?tqx=out:html&tq=SELECT+A,B,C,D,E WHERE B='${name}'`;
-            } else {
-                // Clear the iframe if no name is selected
-                iframe.src = "";
+        // Update iframe src based on selected name
+        nameDropdown.addEventListener('change', function() {
+            const selectedName = this.value;
+            let url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQLmL9sI-uKCz1LzY3zQIJRTZVC40MtV54-vhFPhAbdOr0N2VjtkEk8cCApxNxDlh5da_NG8Q8duaz5/gviz/tq?tqx=out:html";
+            
+            if (selectedName !== "All") {
+                const nameQuery = `SELECT A, B, C, D, E WHERE B='${selectedName}'`;
+                url += `&tq=${encodeURIComponent(nameQuery)}`;
             }
-        }
+
+            document.getElementById("nameFilteredIframe").src = url;
+        });
     </script>
 </body>
 </html>
