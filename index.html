@@ -51,7 +51,7 @@
         <h2>View Specific Asks filtered by name</h2>
         <select id="nameFilter">
             <option value="All">All</option>
-            <!-- Add names dynamically from the names.txt file -->
+            <!-- Names will be dynamically added here -->
         </select>
         
         <iframe id="nameFilteredIframe" src="" width="100%" height="600"></iframe>
@@ -61,19 +61,25 @@
     </div>
 
     <script>
-        // Assume `names` is a list fetched from the names.txt file
-        const names = ['TEST', 'Test 2', 'TASK 3', 'TASK 4', 'TASK 5', 'TEST 10', 'task 11', 'TEST !@', 'CHECKING OPEN', 'another ceh'];
+        // Fetch names from the names.txt file in the GitHub repository
+        fetch('https://raw.githubusercontent.com/parthiv-labdox/test-form/refs/heads/dyanamic/names.txt')  // Change this URL to your raw GitHub file URL
+            .then(response => response.text())
+            .then(data => {
+                // Split the file content into lines and populate the dropdown menu
+                const names = data.split('\n').map(name => name.trim()).filter(name => name.length > 0);
 
-        // Populate the dropdown with names from the list
-        const nameDropdown = document.getElementById("nameFilter");
-        names.forEach((name) => {
-            const option = document.createElement("option");
-            option.value = name;
-            option.text = name;
-            nameDropdown.appendChild(option);
-        });
+                const nameDropdown = document.getElementById("nameFilter");
+                names.forEach((name) => {
+                    const option = document.createElement("option");
+                    option.value = name;
+                    option.text = name;
+                    nameDropdown.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error loading names:', error));
 
         // Update iframe src based on selected name
+        const nameDropdown = document.getElementById("nameFilter");
         nameDropdown.addEventListener('change', function() {
             const selectedName = this.value;
             let url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQLmL9sI-uKCz1LzY3zQIJRTZVC40MtV54-vhFPhAbdOr0N2VjtkEk8cCApxNxDlh5da_NG8Q8duaz5/gviz/tq?tqx=out:html";
