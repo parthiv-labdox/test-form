@@ -87,7 +87,6 @@
     </header>
 
     <div class="container">
-        
         <iframe width="600" height="450" src="https://lookerstudio.google.com/embed/reporting/f9332e8a-2cd3-47e9-8f93-8288ebaa9149/page/bANZE" frameborder="0" style="border:0" allowfullscreen sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
     </div>
 
@@ -107,29 +106,33 @@
         </div>
         
         <iframe id="statusFilteredIframe" src="" width="100%" height="600"></iframe>
-        <h2>View Specific Asks filtered by name</h2>
+        <h2>View Specific Asks filtered by Name</h2>
         <select id="nameFilter">
             <option value="All">All</option>
             <!-- Names will be dynamically added here -->
         </select>
         
         <iframe id="nameFilteredIframe" src="" width="100%" height="600"></iframe>
-
-
     </div>
 
     <script>
-        // Fetch names from the names.txt file in the GitHub repository
-        fetch('https://raw.githubusercontent.com/parthiv-labdox/test-form/refs/heads/dyanamic/names.txt?t=' + new Date().getTime())
+        // Fetch names from Google Sheet
+        fetch('https://docs.google.com/spreadsheets/d/1Tya7ELlmpjzysHcOHUSr-Cl-BM6dXROq4nlM3zBYrC4/gviz/tq?tqx=out:json&tq=SELECT+B')
             .then(response => response.text())
             .then(data => {
-                const names = data.split('\n').map(name => name.trim()).filter(name => name.length > 0);
+                // Parse the response to extract the names
+                const json = JSON.parse(data.substring(47, data.length - 2)); // Clean the response
+                const rows = json.table.rows;
                 const nameDropdown = document.getElementById("nameFilter");
-                names.forEach((name) => {
-                    const option = document.createElement("option");
-                    option.value = name;
-                    option.text = name;
-                    nameDropdown.appendChild(option);
+
+                rows.forEach(row => {
+                    const name = row.c[0]?.v || ""; // Safely access the value
+                    if (name) {
+                        const option = document.createElement("option");
+                        option.value = name;
+                        option.text = name;
+                        nameDropdown.appendChild(option);
+                    }
                 });
             })
             .catch(error => console.error('Error loading names:', error));
