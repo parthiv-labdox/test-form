@@ -5,12 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BNI Referral Board</title>
     <style>
+        /* Dark Mode Styles */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background: #f4f4f4;
-            color: #333;
+            background: #1e1e1e;
+            color: #f4f4f4;
         }
         header {
             background: #007bff;
@@ -26,16 +27,56 @@
         .container {
             margin: 20px auto;
             max-width: 1200px;
+            padding: 20px;
+            background-color: #333;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
         }
         .card {
-            background: #fff;
+            background: #444;
             padding: 20px;
             margin-bottom: 20px;
             border-radius: 5px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         h2 {
-            color: #007bff;
+            color: #00aaff;
+            margin-bottom: 15px;
+        }
+        select, .button-group button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 5px 0;
+            border-radius: 5px;
+            border: 1px solid #555;
+            background-color: #444;
+            color: #f4f4f4;
+        }
+        select {
+            width: 100%;
+            max-width: 300px;
+            margin-right: 20px;
+        }
+        .button-group {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        .button-group button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .button-group button:hover {
+            background-color: #0056b3;
+        }
+        /* Style the iframe for a consistent look in dark mode */
+        iframe {
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
     </style>
 </head>
@@ -44,18 +85,82 @@
         <h1>BNI Members Referral Board</h1>
         <p>View and manage asks for specific members.</p>
     </header>
+
+    <div class="container">
+        
+        <iframe width="600" height="450" src="https://lookerstudio.google.com/embed/reporting/f9332e8a-2cd3-47e9-8f93-8288ebaa9149/page/bANZE" frameborder="0" style="border:0" allowfullscreen sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+    </div>
+
+    <!-- Main content -->
     <div class="container">
         <h2>Submit Your Ask</h2>
-        <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vQLmL9sI-uKCz1LzY3zQIJRTZVC40MtV54-vhFPhAbdOr0N2VjtkEk8cCApxNxDlh5da_NG8Q8duaz5/pubhtml?widget=true&amp;headers=false"></iframe>
-
-        <h2>View Specific Asks filtered by name</h2>
-        <iframe src="https://docs.google.com/spreadsheets/d/1Tya7ELlmpjzysHcOHUSr-Cl-BM6dXROq4nlM3zBYrC4/edit?resourcekey=&gid=1724033991#gid=1724033991&fvid=995275762"></iframe>
-
-        
+        <!-- Submit button -->
+        <div class="button-group">
+            <button onclick="window.location.href='https://docs.google.com/forms/d/e/1FAIpQLSfuGahM_Qy3HF0b28aOs28I1mJ9m8zzmDvuqcLEdKn4xCe8CQ/viewform';">
+                Submit Your Ask
+            </button>
+        </div>
         <h2>View Specific Asks filtered by Status</h2>
-        <iframe src="https://docs.google.com/spreadsheets/d/1Tya7ELlmpjzysHcOHUSr-Cl-BM6dXROq4nlM3zBYrC4/edit?resourcekey=&gid=1724033991#gid=1724033991&fvid=249001933"></iframe>
+        <div class="button-group">
+            <button id="openBtn">Open</button>
+            <button id="closedBtn">Closed</button>
+        </div>
+        
+        <iframe id="statusFilteredIframe" src="" width="100%" height="600"></iframe>
+        <h2>View Specific Asks filtered by name</h2>
+        <select id="nameFilter">
+            <option value="All">All</option>
+            <!-- Names will be dynamically added here -->
+        </select>
+        
+        <iframe id="nameFilteredIframe" src="" width="100%" height="600"></iframe>
+
+
     </div>
+
+    <script>
+        // Fetch names from the names.txt file in the GitHub repository
+        fetch('https://raw.githubusercontent.com/parthiv-labdox/test-form/refs/heads/dyanamic/names.txt?t=' + new Date().getTime())
+            .then(response => response.text())
+            .then(data => {
+                const names = data.split('\n').map(name => name.trim()).filter(name => name.length > 0);
+                const nameDropdown = document.getElementById("nameFilter");
+                names.forEach((name) => {
+                    const option = document.createElement("option");
+                    option.value = name;
+                    option.text = name;
+                    nameDropdown.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error loading names:', error));
+
+        // Update iframe src based on selected name
+        const nameDropdown = document.getElementById("nameFilter");
+        nameDropdown.addEventListener('change', function() {
+            const selectedName = this.value;
+            let url = "https://docs.google.com/spreadsheets/d/1Tya7ELlmpjzysHcOHUSr-Cl-BM6dXROq4nlM3zBYrC4/gviz/tq?tqx=out:html";
+            
+            if (selectedName !== "All") {
+                const nameQuery = `SELECT A, B, C, D, E WHERE B='${selectedName}'`;
+                url += `&tq=${encodeURIComponent(nameQuery)}`;
+            }
+
+            document.getElementById("nameFilteredIframe").src = url;
+        });
+
+        // Status buttons functionality
+        const openBtn = document.getElementById("openBtn");
+        const closedBtn = document.getElementById("closedBtn");
+
+        openBtn.addEventListener('click', function() {
+            const url = "https://docs.google.com/spreadsheets/u/4/d/1Tya7ELlmpjzysHcOHUSr-Cl-BM6dXROq4nlM3zBYrC4/gviz/tq?tqx=out:html&tq=SELECT+A,B,C,D,E+WHERE+E%3D%27Open%27";
+            document.getElementById("statusFilteredIframe").src = url;
+        });
+
+        closedBtn.addEventListener('click', function() {
+            const url = "https://docs.google.com/spreadsheets/u/4/d/1Tya7ELlmpjzysHcOHUSr-Cl-BM6dXROq4nlM3zBYrC4/gviz/tq?tqx=out:html&tq=SELECT+A,B,C,D,E+WHERE+E%3D%27Closed%27";
+            document.getElementById("statusFilteredIframe").src = url;
+        });
+    </script>
 </body>
 </html>
-
-
